@@ -1,22 +1,12 @@
+/* Libary Imports */
 use clap::Parser;
 use enum_dispatch::enum_dispatch;
 
-#[macro_use]
-mod macros;
+/* Local Imports */
 mod day_impl;
 use day_impl::*;
 
-const MAX_DAYS: u32 = 25;
-
-#[derive(Debug)]
-struct DayError;
-
-#[derive(Debug)]
-enum Outcome {
-    Passed,
-    Failed,
-}
-
+/* Macro Definitions */
 macro_rules! get_runners {
     ($(($runner_name: ident, $day_num: expr, $enum_name: ident),)+) => {
 
@@ -32,6 +22,18 @@ macro_rules! get_runners {
             }
         }
     };
+}
+
+/* Structs and Global Data */
+const MAX_DAYS: u32 = 25;
+
+#[derive(Debug)]
+struct DayError;
+
+#[derive(Debug)]
+enum Outcome {
+    Passed,
+    Failed,
 }
 
 get_runners!(
@@ -70,6 +72,7 @@ struct Cli {
     run_all_days: bool,
 }
 
+/* Traits */
 #[enum_dispatch(Runner)]
 trait AocDay {
     fn part1(&self, input: &Vec<Vec<String>>) -> u32 {
@@ -80,6 +83,7 @@ trait AocDay {
     }
 } 
 
+/* Functions */
 fn main() {
     let cli = Cli::parse();
 
