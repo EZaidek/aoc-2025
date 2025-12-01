@@ -1,0 +1,12 @@
+[package]
+name = "AoC_2025"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.53", features = ["derive"] }
+enum_dispatch = "0.3.13"
+
+[[bin]]
+name = "run_aoc"
+path = "src/main.rs"
