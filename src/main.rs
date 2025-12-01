@@ -90,11 +90,7 @@ fn main() {
 }
 
 fn start_day(day: Option<u32>, cli: &Cli) {
-    let day_num = match day {
-        None => cli.day.expect("Day number must be provided."),
-        Some(d) => d,
-    };
-    
+    let day_num = day.unwrap_or(cli.day.expect("Day number must be provided."));
     let runner = get_runner(day_num).expect("Invalid day number given"); 
     let result: (Outcome, Outcome) = run_day(day_num, runner);
     println!("DAY {}: PART1 - {:?}, PART2 - {:?}", day_num, result.0, result.1)
