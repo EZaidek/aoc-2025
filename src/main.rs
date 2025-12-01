@@ -1,25 +1,19 @@
 /* Libary Imports */
 use clap::Parser;
-use enum_dispatch::enum_dispatch;
 
 /* Local Imports */
 mod day_impl;
 use day_impl::*;
 
 /* Macro Definitions */
-macro_rules! get_runners {
-    ($(($runner_name: ident, $day_num: expr, $enum_name: ident),)+) => {
-
-        #[enum_dispatch]
-        enum Runner {
-            $($enum_name($runner_name),)+
-        }
-
-        fn get_runner(day: u32) -> Result<Runner, DayError> {
-            match day {
-                $($day_num => Ok(Runner::$enum_name($runner_name::new())),)+
+macro_rules! get_runners2 {
+    ($(($runner_name: ident, $day_num: expr),)+) => {
+        fn get_runner(day: u32) -> Result<Box<dyn AocDay>, DayError> {
+            let runner_impl: Result<Box<dyn AocDay>, DayError> = match day {
+                $($day_num => Ok(Box::new($runner_name::new())),)+
                 _ => Err(DayError)
-            }
+            };
+            runner_impl
         }
     };
 }
@@ -36,31 +30,31 @@ enum Outcome {
     Failed,
 }
 
-get_runners!(
-    (DayRunner1, 1, DAY1), 
-    (DayRunner2, 2, DAY2),
-    (DayRunner3, 3, DAY3),
-    (DayRunner4, 4, DAY4),
-    (DayRunner5, 5, DAY5),
-    (DayRunner6, 6, DAY6),
-    (DayRunner7, 7, DAY7),
-    (DayRunner8, 8, DAY8),
-    (DayRunner9, 9, DAY9),
-    (DayRunner10, 10, DAY10),
-    (DayRunner11, 11, DAY11),
-    (DayRunner12, 12, DAY12),
-    (DayRunner13, 13, DAY13),
-    (DayRunner14, 14, DAY14),
-    (DayRunner15, 15, DAY15),
-    (DayRunner16, 16, DAY16),
-    (DayRunner17, 17, DAY17),
-    (DayRunner18, 18, DAY18),
-    (DayRunner19, 19, DAY19),
-    (DayRunner20, 20, DAY20),
-    (DayRunner21, 21, DAY21),
-    (DayRunner22, 22, DAY22),
-    (DayRunner23, 23, DAY23),
-    (DayRunner24, 24, DAY24),
+get_runners2!(
+    (DayRunner1, 1), 
+    (DayRunner2, 2),
+    (DayRunner3, 3),
+    (DayRunner4, 4),
+    (DayRunner5, 5),
+    (DayRunner6, 6),
+    (DayRunner7, 7),
+    (DayRunner8, 8),
+    (DayRunner9, 9),
+    (DayRunner10, 10),
+    (DayRunner11, 11),
+    (DayRunner12, 12),
+    (DayRunner13, 13),
+    (DayRunner14, 14),
+    (DayRunner15, 15),
+    (DayRunner16, 16),
+    (DayRunner17, 17),
+    (DayRunner18, 18),
+    (DayRunner19, 19),
+    (DayRunner20, 20),
+    (DayRunner21, 21),
+    (DayRunner22, 22),
+    (DayRunner23, 23),
+    (DayRunner24, 24),
 );
 
 #[derive(Parser)]
@@ -73,7 +67,6 @@ struct Cli {
 }
 
 /* Traits */
-#[enum_dispatch(Runner)]
 trait AocDay {
     fn part1(&self, input: &Vec<Vec<String>>) -> u32 {
         unimplemented!("Part 1 not implemented");
@@ -102,12 +95,12 @@ fn start_day(day: Option<u32>, cli: &Cli) {
         Some(d) => d,
     };
     
-    let runner: Runner = get_runner(day_num).expect("Invalid day number given"); 
+    let runner = get_runner(day_num).expect("Invalid day number given"); 
     let result: (Outcome, Outcome) = run_day(day_num, runner);
     println!("DAY {}: PART1 - {:?}, PART2 - {:?}", day_num, result.0, result.1)
 }
 
-fn run_day(day: u32, runner: Runner) -> (Outcome, Outcome) {
+fn run_day(day: u32, runner: Box<dyn AocDay>) -> (Outcome, Outcome) {
     let input: Vec<Vec<String>> = get_input(day);
     let p1 = submit_solution(day, runner.part1(&input));
     let p2 = submit_solution(day, runner.part2(&input));
